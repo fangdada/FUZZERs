@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Peach xmlns="http://peachfuzzer.com/2012/Peach" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://peachfuzzer.com/2012/Peach ../peach.xsd">
+
+    <DataModel name="DataVfolder">
+            <String value="GET /vfolder.ghp" mutable="false" token="true"/>                   
+            <String value=" HTTP/1.1" mutable="false" token="true"/>
+            <String value="\r\n" mutable="false" token="true"/>
+
+            <String value="Accept: " mutable="false" token="true"/>
+            <String value="image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, application/x-shockwave-flash, application/xaml+xml, application/x-ms-xbap, application/x-ms-application, */*" mutable="false" token="true"/>   
+            <String value="\r\n" mutable="false" token="true"/>   
+
+            <String value="Accept-Language: " mutable="false" token="true"/>
+            <String value="zh-cn" mutable="false" token="true"/>   
+            <String value="\r\n" mutable="false" token="true"/>
+
+            <String value="Accept-Encoding: " mutable="false" token="true"/>
+            <String value="gzip, deflate" mutable="false" token="true"/>   
+            <String value="\r\n" mutable="false" token="true"/>
+
+            <String value="If-Modified-Since: " mutable="false" token="true" />
+            <String value="Fri, 11 May 2012 10:11:48 GMT; length=12447" mutable="false" token="true" />
+            <String value="\r\n" mutable="false" token="true"/>
+
+            <String value="User-Agent: " mutable="false" token="true"/>
+            <String value="Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET4.0C; .NET4.0E)" mutable="false" token="true"/>   
+            <String value="\r\n" mutable="false" token="true"/>
+
+            <String value="Host: ##HOST##:##PORT##" mutable="false" token="true"/>
+            <String value="\r\n" mutable="false" token="true"/>
+
+            <String value="Conection: " mutable="false" token="true"/>
+            <String value="Keep-Alive" mutable="false" token="true"/>   
+            <String value="\r\n" mutable="false" token="true"/>
+
+            <String value="Cookie: " mutable="false" token="true"/>
+            <String value="SESSIONID=2626; " mutable="false" token="true"/>
+
+            <!-- fuzz UserID -->
+            <String value="UserID=" mutable="false" token="true"/>
+            <String value="" />
+            <String value="; " mutable="false" token="true"/>
+
+            <!-- fuzz PassWD -->
+            <String value="PassWD=" mutable="false" token="true"/>
+            <String value="" />
+            <String value="; " mutable="false" token="true"/>               
+            <String value="\r\n" mutable="false" token="true"/>
+            <String value="\r\n" mutable="false" token="true"/>
+    </DataModel>   
+
+    <DataModel name="DataResponse">
+        <!-- server reply, we don't care -->
+        <String value="" />
+    </DataModel>
+
+    <StateModel name="StateVfolder" initialState="Initial">
+        <State name="Initial">
+            <Action type="output">
+                <DataModel ref="DataVfolder"/>
+            </Action>
+            <Action type="input">
+                <DataModel ref="DataResponse"/>
+            </Action>   
+        </State>
+    </StateModel>   
+
+    <Agent name="LocalAgent">
+        <Monitor class="WindowsDebugger">
+            <Param name="CommandLine" value="C:\EFS Software\Easy File Sharing Web Server\fsws.exe"/>	
+        </Monitor>
+
+        <!-- close the popup window asking us to buy the software before running tests -->
+	
+        <Monitor class="PopupWatcher">
+            <Param name="WindowNames" value="Registration - unregistered"/>
+        </Monitor>
+	
+    </Agent>
+
+    <Test name="Default">
+        <Agent ref="LocalAgent"/>
+        <StateModel ref="StateVfolder"/>
+        <Publisher class="TcpClient">
+            <Param name="Host" value="##HOST##"/>
+            <Param name="Port" value="##PORT##"/>
+        </Publisher>
+
+        <Logger class="File">
+            <!-- save crash information in the Logs directory -->
+            <Param name="Path" value="C:\Users\fanda\Downloads\fuzz"/>
+        </Logger>
+
+        <!-- use a finite number of test cases that test UserID first, followed by PassWD -->
+        <Strategy class="Sequential" />
+
+    </Test>   
+</Peach>
