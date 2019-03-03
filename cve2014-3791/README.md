@@ -120,7 +120,7 @@
 - Agent结构则用monitor（监视器）来采取一些行为，比如检测错误，调用调试器等；其子结构Monitor中的class=“WindowsDebugger”意味执行这个路径重新开启被测试软件（检测到错误崩溃的时候），class="PopupWatcher"则意为检测到窗口名为value里的值时就关闭掉（可以用这个关闭烦人的确认键，前提是窗口名最好是独一无二的不然容易误关）。
 - Test将上述结构体联结起来，可以将Test理解为类似主函数或入口函数之类的东西，用ref引用上述定义的结构之后peach就明白如何fuzz了；Publisher在这里接收命令行参数；Logger顾名思义；Strategy就是fuzz策略，可以是随机（Random）的，也可以是顺序（Sequential）的（mutable变量按声明的顺序进行生成测试）。
 
-&nbsp;&nbsp;&nbsp;&nbsp;<font size=2>好不容易解释完了peach语法，接下来就开始fuzz吧，在这里用以下命令启动：peach -DHOST=<ip> -DPORT=<port> <xml file>。我这里就是peach -DHOST=10.211.55.5 -DPORT=80 efs.xml。</font></br>
+&nbsp;&nbsp;&nbsp;&nbsp;<font size=2>好不容易解释完了peach语法，接下来就开始fuzz吧，在这里用以下命令启动：peach -DHOST=\<ip\> -DPORT=\<port\> \<xml filename\>。我这里就是peach -DHOST=10.211.55.5 -DPORT=80 efs.xml。</font></br>
 
 ![fuzzing](./screenshot/fuzzing.png)
 
