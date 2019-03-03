@@ -10,7 +10,7 @@
 
 ![包](./screenshot/包.png)
 
-&nbsp;&nbsp;&nbsp;&nbsp;<font size=2>我们的目的就是fuzz这个账号密码查看是否存在漏洞，编写如下pit文件，信息都可以从包里抓取，我们要fuzz的账号密码就用一个mutable=true或者省略来让peach进行生成并测试。如果看懂了官方文档的话再来看这个pit应该是看得懂的，不懂的话下面还有一些讲解：</font></br>
+&nbsp;&nbsp;&nbsp;&nbsp;<font size=2>我们的目的就是fuzz这个账号密码查看是否存在漏洞，编写如下pit文件，信息都可以从包里抓取，我们要fuzz的账号密码就用一个mutable=true或者干脆省略来让peach进行生成并测试。如果看懂了官方文档的话再来看这个pit应该是看得懂的，不懂的话下面还有一些讲解：</font></br>
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -221,7 +221,7 @@ EIP 0045C8C2 fsws.0045C8C2
 
 ```
 
-&nbsp;&nbsp;&nbsp;&nbsp;<font size=2>也就是说会把esi偏移0x10处也就是0x43B68D0的数据放入edx然后调用edx+0x28这个地址。也就是说如果我们在0x43B68D0处放入0x43B68D4-0x28，那么程序就会去call 0x43B68D4，这时候我们在0x43B68D4里放上call esi这个gadget的地址（ollydbg找gadget可以用alt+E后用search for->all commands），那么就会有call 0x43B68C0的效果，在这里我们继续放gadget跳至shellcode，gadget可以是“sub esi-0x28   jmp esi”，为什么不直接"add esi,0x28"是因为这样数据中会有"\x00"，这就像是EOF会让软件以为到了结尾中断接收。最终gadget的机器码就是"\x81\xee\xe8\xff\xff\xff" + "\xff\xe6"。shellcode就用了弹计算器。</font></br>
+&nbsp;&nbsp;&nbsp;&nbsp;<font size=2>也就是说会把esi偏移0x10处也就是0x43B68D0的数据放入edx然后调用edx+0x28这个地址。也就是说如果我们在0x43B68D0处放入0x43B68D4-0x28，那么程序就会去call 0x43B68D4，这时候我们在0x43B68D4里放上call esi这个gadget的地址（**ollydbg找gadget可以用alt+E后用search for->all commands**），那么就会有call 0x43B68C0的效果，在这里我们继续放gadget跳至shellcode，gadget可以是“sub esi-0x28   jmp esi”，为什么不直接"add esi,0x28"是因为这样数据中会有"\x00"，这就像是EOF会让软件以为到了结尾中断接收。最终gadget的机器码就是"\x81\xee\xe8\xff\xff\xff" + "\xff\xe6"。shellcode就用了弹计算器。</font></br>
 
 &nbsp;&nbsp;&nbsp;&nbsp;<font size=2>我的win7有aslr，所以在调试时手动把0x43B68D0处的数据根据实际情况调整了一下之后就可以了。最终效果如下：</font></br>
 
