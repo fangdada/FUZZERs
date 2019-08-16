@@ -1,2 +1,1 @@
-# FUZZERs
-收集各种fuzzer testcase
+各种CVE的复现，部分包括fuzzer样例。
